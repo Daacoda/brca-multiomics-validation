@@ -1,0 +1,14 @@
+# Git & Environment
+.git
+.gitignore
+.venv/
+__pycache__/
+*.pyc
+
+# IDE / Dev Tooling
+.vscode/
+.devcontainer/
+
+# Temporary / Scratch Files
+*.tmp
+*.log
