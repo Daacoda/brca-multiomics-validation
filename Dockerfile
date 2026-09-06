@@ -1,16 +1,26 @@
-# Use official lightweight Python 3.12 image
 FROM python:3.12-slim
 
-# Copy uv binary directly from official Astral registry image
+# Install system dependencies (C compilers / curl required for C-extensions)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy uv and uvx binaries directly from official Astral registry image
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
-# Install required runtime dependencies using uv
-RUN uv pip install --system duckdb pandas
+# Copy project specification files
+COPY pyproject.toml uv.lock README.md* ./
 
-# Copy application source code
+# Install project dependencies into container environment
+RUN uv sync --frozen --no-install-project
+
+# Copy source scripts and configuration
 COPY src/ ./src/
+COPY Snakefile ./
 
-# Default entry point runs the database verification suite
-CMD ["python", "src/validate_staging.py"]
+# Default entrypoint runs Snakemake pipeline inside container
+CMD ["uv", "run", "snakemake", "--cores", "1"]
