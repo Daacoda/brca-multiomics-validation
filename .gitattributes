@@ -1,1 +1,9 @@
+# Force Snakemake recognition
 Snakefile linguist-language=Snakemake
+
+# Force SQL recognition for all queries
+*.sql linguist-language=SQL
+
+# Ignore lockfiles and vendor code from language statistics
+uv.lock linguist-vendored
+pyproject.toml linguist-documentation
